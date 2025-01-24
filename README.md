@@ -40,8 +40,8 @@ class App:# создание класса App
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.bg_image_tk
 
         # Создаем два объекта с изображениями
-        self.object1 = BouncingObject(self.canvas, 200, 150, 'УИТЛИL.PNG', 3, 4) №путь к изображению
-        self.object2 = BouncingObject(self.canvas, 600, 450, 'модуль космоса1.png', -4,
+        self.object1 = BouncingObject(self.canvas, 200, 150, 'Shark.PNG', 3, 4) №путь к изображению
+        self.object2 = BouncingObject(self.canvas, 600, 450, 'i.png', -4,
                                       -3) №путь к изображению
 
         self.update() #вызов метода update
@@ -56,7 +56,7 @@ root = tk.Tk()
 root.title("анимация")#название окна 
 
 #  путь к фоновому изображению
-background_image_path = 'космос.png'
+background_image_path = 'ocean.png'
 app = App(root, background_image_path)
 
 #запуск цикла

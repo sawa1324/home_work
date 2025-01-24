@@ -22,7 +22,7 @@ class BouncingObject(MovingObject):
         self.dy = dy
 
     def update(self, width, height):
-        # Проверка на столкновение с стенками
+
         img_width = self.image_tk.width()
         img_height = self.image_tk.height()
 
@@ -40,14 +40,12 @@ class App:
         self.canvas = tk.Canvas(master, width=800, height=600)
         self.canvas.pack()
 
-        # Установка фонового изображения
+
         self.bg_image_tk = tk.PhotoImage(file=bg_image_path)
         self.canvas.create_image(0, 0, anchor=tk.NW, image=self.bg_image_tk)
 
-        # Создаем два объекта с изображениями
-        self.object1 = BouncingObject(self.canvas, 200, 150, 'УИТЛИL.PNG', 3, 4)  # Замените на свой путь к изображению
-        self.object2 = BouncingObject(self.canvas, 600, 450, 'модуль космоса1.png', -4,
-                                      -3)  # Замените на свой путь к изображению
+        self.object1 = BouncingObject(self.canvas, 200, 150, 'Shark.png', 3, 4)
+        self.object2 = BouncingObject(self.canvas, 600, 450, 'i.png', -4, -3)
 
         self.update()
 
@@ -57,10 +55,13 @@ class App:
         self.master.after(20, self.update)
 
 
-root = tk.Tk()
-root.title("анимация")
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Game_animation")
 
-# Укажите путь к фоновому изображению
-background_image_path = 'космос.png'
-app = App(root, background_image_path)
-root.mainloop()
+    background_image_path = ('ocean.png')
+    app = App(root, background_image_path)
+    root.mainloop()
+
+
+
