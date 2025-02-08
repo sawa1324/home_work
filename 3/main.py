@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 import missile_collection
+=======
+import missiles_collection
+from tank import Tank
+>>>>>>> e79046c30af05a14ed18907d82aea26cd8fcea87
 from tkinter import *
 
 import world
 import tank_collection
-import textytre
+import texture
 
 KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN = 37, 39, 38, 40
 
@@ -16,7 +21,7 @@ FPS = 60
 
 def update():
     tank_collection.update()
-    missile_collection.update()
+    missiles_collection.update()
     player = tank_collection.get_player()
     world.set_camera_xy(player.get_x() - world.SCREEN_WIDTH // 2 + player.get_size() // 2,
                         player.get_y() - world.SCREEN_HEIGHT // 2 + player.get_size() // 2)
@@ -31,7 +36,7 @@ def key_press(event):
         return
 
     if event.keycode == KEY_W:
-        player.forward()
+        player.forvard()
     elif event.keycode == KEY_S:
         player.backward()
     elif event.keycode == KEY_A:
@@ -48,9 +53,12 @@ def key_press(event):
         world.move_camera(5, 0)
     elif event.keycode == 32:
         player.fire()
+    if player.is_destroyed():
+        return
 
 
 def load_textures():
+<<<<<<< HEAD
     textytre.load('tank_up', '../img/tank_up.png')
     textytre.load('tank_down', '../img/tank_down.png')
     textytre.load('tank_left', '../img/tank_left.png')
@@ -60,12 +68,31 @@ def load_textures():
     textytre.load('tank_down_player', '../img/tank_down_player.png')
     textytre.load('tank_left_player', '../img/tank_left_player.png')
     textytre.load('tank_right_player', '../img/tank_right_player.png')
+=======
+    texture.load('tank_up',
+                  '../img/tank_up.png')
+    texture.load('tank_down',
+                  '../img/tank_down.png')
+    texture.load('tank_left',
+                  '../img/tank_left.png')
+    texture.load('tank_right',
+                  '../img/tank_right.png')
 
-    textytre.load(world.BRICK, '../img/brick.png')
-    textytre.load(world.WATER, '../img/water.png')
-    textytre.load(world.CONCRETE, '../img/wall.png')
+    texture.load('tank_up_player',
+                  '../img/tank_up_player.png')
+    texture.load('tank_down_player',
+                  '../img/tank_down_player.png')
+    texture.load('tank_left_player',
+                  '../img/tank_left_player.png')
+    texture.load('tank_right_player',
+                  '../img/tank_right_player.png')
+>>>>>>> e79046c30af05a14ed18907d82aea26cd8fcea87
 
-    textytre.load(world.MISSLE, '../img/bonus.png')
+    texture.load(world.BRICK, '../img/brick.png')
+    texture.load(world.WATER, '../img/water.png')
+    texture.load(world.CONCRETE, '../img/wall.png')
+
+    texture.load(world.MISSLE, '../img/bonus.png')
 
     textytre.load('missile_up', '../img/missile_up.png')
     textytre.load('missile_left', '../img/missile_left.png')
@@ -83,6 +110,17 @@ def load_textures():
 
 
 
+<<<<<<< HEAD
+=======
+    texture.load('missile_up',
+                  '../img/missile_up.png')
+    texture.load('missile_down',
+                  '../img/missile_down.png')
+    texture.load('missile_left',
+                  '../img/missile_left.png')
+    texture.load('missile_right',
+                  '../img/missile_right.png')
+>>>>>>> e79046c30af05a14ed18907d82aea26cd8fcea87
 
 
 w = Tk()
@@ -99,7 +137,12 @@ canv = Canvas(w, width=world.SCREEN_WIDTH, height=world.SCREEN_HEIGHT, bg='light
 canv.pack()
 world.initialize(canv)
 tank_collection.initialize(canv)
+<<<<<<< HEAD
 missile_collection.initialize(canv)
+=======
+missiles_collection.initialize(canv)
+
+>>>>>>> e79046c30af05a14ed18907d82aea26cd8fcea87
 w.bind('<KeyPress>', key_press)
 update()
 

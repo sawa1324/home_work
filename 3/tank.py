@@ -3,7 +3,7 @@ from hitbox import Hitbox
 from random import randint
 import world
 
-import textytre as skin
+import texture as skin
 
 
 class Tank:
