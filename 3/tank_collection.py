@@ -1,34 +1,20 @@
 from random import randint
 from missile_collection import check_missiles_collision
 from units import Tank
-<<<<<<< HEAD
 from tkinter import NW
-=======
-from missiles_collection import check_missiles_collision
->>>>>>> e79046c30af05a14ed18907d82aea26cd8fcea87
 import world
-from tkinter import NW
 
 _tanks = []
 _canvas = None
 id_screen_text = 0
-<<<<<<< HEAD
 
 
 def initialize(canv):
-=======
-
-def initialize(canv):
-
->>>>>>> e79046c30af05a14ed18907d82aea26cd8fcea87
     global _canvas, id_screen_text
     _canvas = canv
     player = spawn(False)
     enemy = spawn(True).set_target(player)
     spawn(True).set_target(player)
-    id_screen_text = _canvas.create_text(10,10,text = _get_screen_text(),
-                                         font = ('TkDefaultFont',20),
-                                         fill = 'black', anchor=NW)
 
     id_screen_text = _canvas.create_text(10, 10,
                                          text=_get_screen_text(),
@@ -51,21 +37,10 @@ def _update_screen():
 
 def get_player():
     return _tanks[0]
-def _get_screen_text():
-    if get_player().is_destroyed():
-        return 'Game Over!'
-    if len(_tanks)==1:
-        return 'You Win!'
-    return f'Осталось {format(len(_tanks)-1)}'
-def _update_screen_text():
-    _canvas.itemconfig(id_screen_text, text=_get_screen_text())
+
 
 def update():
-<<<<<<< HEAD
     _update_screen()
-=======
-    _update_screen_text()
->>>>>>> e79046c30af05a14ed18907d82aea26cd8fcea87
     start = len(_tanks) - 1
     for i in range(start, -1, -1):
         if _tanks[i].is_destroyed() and i != 0:
@@ -80,7 +55,7 @@ def check_collision(tank):
     for other_tank in _tanks:
         if tank == other_tank:
             continue
-        if tank.intersects(other_tank):
+        if tank.intersect(other_tank):
             return True
     return False
 
