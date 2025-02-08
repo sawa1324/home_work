@@ -1,7 +1,6 @@
 
 import missile_collection
 
-import missiles_collection
 from tank import Tank
 
 from tkinter import *
@@ -21,7 +20,7 @@ FPS = 60
 
 def update():
     tank_collection.update()
-    missiles_collection.update()
+    missile_collection.update()
     player = tank_collection.get_player()
     world.set_camera_xy(player.get_x() - world.SCREEN_WIDTH // 2 + player.get_size() // 2,
                         player.get_y() - world.SCREEN_HEIGHT // 2 + player.get_size() // 2)
@@ -36,7 +35,7 @@ def key_press(event):
         return
 
     if event.keycode == KEY_W:
-        player.forvard()
+        player.forward()
     elif event.keycode == KEY_S:
         player.backward()
     elif event.keycode == KEY_A:
@@ -59,15 +58,15 @@ def key_press(event):
 
 def load_textures():
 
-    textytre.load('tank_up', '../img/tank_up.png')
-    textytre.load('tank_down', '../img/tank_down.png')
-    textytre.load('tank_left', '../img/tank_left.png')
-    textytre.load('tank_right', '../img/tank_right.png')
+    texture.load('tank_up', '../img/tank_up.png')
+    texture.load('tank_down', '../img/tank_down.png')
+    texture.load('tank_left', '../img/tank_left.png')
+    texture.load('tank_right', '../img/tank_right.png')
 
-    textytre.load('tank_up_player', '../img/tank_up_player.png')
-    textytre.load('tank_down_player', '../img/tank_down_player.png')
-    textytre.load('tank_left_player', '../img/tank_left_player.png')
-    textytre.load('tank_right_player', '../img/tank_right_player.png')
+    texture.load('tank_up_player', '../img/tank_up_player.png')
+    texture.load('tank_down_player', '../img/tank_down_player.png')
+    texture.load('tank_left_player', '../img/tank_left_player.png')
+    texture.load('tank_right_player', '../img/tank_right_player.png')
 
     texture.load('tank_up',
                   '../img/tank_up.png')
@@ -94,18 +93,18 @@ def load_textures():
 
     texture.load(world.MISSLE, '../img/bonus.png')
 
-    textytre.load('missile_up', '../img/missile_up.png')
-    textytre.load('missile_left', '../img/missile_left.png')
-    textytre.load('missile_right', '../img/missile_right.png')
-    textytre.load('missile_down', '../img/missile_down.png')
+    texture.load('missile_up', '../img/missile_up.png')
+    texture.load('missile_left', '../img/missile_left.png')
+    texture.load('missile_right', '../img/missile_right.png')
+    texture.load('missile_down', '../img/missile_down.png')
 
-    textytre.load('tank_destroy', '../img/tank_destroy.png')
+    texture.load('tank_destroy', '../img/tank_destroy.png')
 
-    textytre.load('100', '../img/100.png')
-    textytre.load('75', '../img/75.png')
-    textytre.load('50', '../img/50.png')
-    textytre.load('25', '../img/25.png')
-    textytre.load('0', '../img/0.png')
+    texture.load('100', '../img/100.png')
+    texture.load('75', '../img/75.png')
+    texture.load('50', '../img/50.png')
+    texture.load('25', '../img/25.png')
+    texture.load('0', '../img/0.png')
 
 
 
@@ -139,7 +138,6 @@ tank_collection.initialize(canv)
 
 missile_collection.initialize(canv)
 
-missiles_collection.initialize(canv)
 
 
 w.bind('<KeyPress>', key_press)

@@ -1,4 +1,4 @@
-import textytre
+import texture
 from tkinter import NW
 from random import randint, choice
 
@@ -196,13 +196,13 @@ class _Cell:
         elif self.__block == GROUND:
             self.__create_element(block)
         else:
-            self.itemconfig(self.__id, image=textytre.get(block))
+            self.itemconfig(self.__id, image=texture.get(block))
         self.__block = block
 
     def __create_element(self, block):
         if block != GROUND:
             self.__id = self.__canvas.create_image(self.__screen_x, self.__screen_y,
-                                                   image=textytre.get(block), anchor=NW)
+                                                   image=texture.get(block), anchor=NW)
 
     def update(self):
         if self.__block == GROUND:

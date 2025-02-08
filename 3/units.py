@@ -1,6 +1,6 @@
 import world
 from hitbox import Hitbox
-import textytre as skin
+import texture as skin
 from tkinter import NW
 from random import randint
 import missile_collection
