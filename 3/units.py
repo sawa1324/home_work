@@ -1,9 +1,9 @@
-import missile_collection
 import world
 from hitbox import Hitbox
 import textytre as skin
 from tkinter import NW
 from random import randint
+import missile_collection
 
 
 class Unit:
@@ -26,21 +26,32 @@ class Unit:
         self._backward_image = default_image
         self._left_image = default_image
         self._right_image = default_image
+        self._tank_destroy = default_image
+        self._100 = default_image
+        self._75 = default_image
+        self._50 = default_image
+        self._25 = default_image
+        self._0 = default_image
         self._create()
 
-
+    def damage(self, value):
+        self._hp -= value
+        if self._hp <= 0:
+            self.destroy()
 
     def is_destroyed(self):
         return self._destroyed
 
-
     def destroy(self):
         self._destroyed = True
         self.stop()
+        self._speed = 0
+        if self._hp == 0:
+            self._canvas.itemconfig(self._id,
+                                    image=skin.get(self._tank_destroy))
+
     def _create(self):
-        self._id = self._canvas.create_image(self._x, self._y,
-                                             image=skin.get(self._default_image),
-                                             anchor=NW)
+        self._id = self._canvas.create_image(self._x, self._y, image=skin.get(self._default_image), anchor=NW)
 
     def __del__(self):
         try:
@@ -177,17 +188,40 @@ class Tank(Unit):
             self._backward_image = 'tank_down'
             self._left_image = 'tank_left'
             self._right_image = 'tank_right'
+            self._100 = '100hp'
+            self._75 = '75hp'
+            self._50 = '50hp'
+            self._25 = '25hp'
+            self._0 = '0hp'
         else:
             self._forward_image = 'tank_up_player'
             self._backward_image = 'tank_down_player'
             self._left_image = 'tank_left_player'
             self._right_image = 'tank_right_player'
+            self._tank_destroy = 'tank_destroy'
+            self._100 = '100hp'
+            self._75 = '75hp'
+            self._50 = '50hp'
+            self._25 = '25hp'
+            self._0 = '0hp'
 
         self.forward()
         self._ammo = 80
         self._usual_speed = self._speed
         self._water_speed = self._speed // 2
         self._target = None
+
+    def hp_damage(self):
+        if self._hp == 100:
+            print('100')
+        elif 100 > self._hp > 75:
+            print('75')
+        elif 75 > self._hp > 50:
+            print('50')
+        elif 50 > self._hp > 25:
+            print('25')
+        elif 25 > self._hp > 0:
+            print('0')
 
     def set_target(self, target):
         self._target = target
@@ -249,40 +283,70 @@ class Tank(Unit):
                 self._AI_goto_target()
             else:
                 self._change_orientation()
+        elif randint(1, 30) == 1:
+            self._AI_fire()
+        elif randint(1, 100) == 1:
+            self.fire()
 
+    def _AI_fire(self):
+        if self._target is None:
+            return
+
+        center_x = self.get_x() + self.get_size()//2
+        center_y = self.get_y() + self.get_size() // 2
+
+        target_center_x = (self._target.get_x() + self._target.get_size() // 2)
+        target_center_y = (self._target.get_y() + self._target.get_size() // 2)
+
+        row = world.get_row(center_y)
+        col = world.get_row(center_x)
+
+        row_target = world.get_row(target_center_y)
+        col_target = world.get_col(target_center_x)
+
+        if row == row_target:
+            if col < col_target:
+                self.right()
+                self.fire()
+            else:
+                self.left()
+                self.fire()
+
+        elif col == col_target:
+            if row < row_target:
+                self.backward()
+                self.fire()
+            else:
+                self.forward()
+                self.fire()
 
 
 class Missile(Unit):
     def __init__(self, canvas, owner):
-        super().__init__(canvas,
-                         owner.get_x(),
-                         owner.get_y(),
-                         6,
-                         20,
-                         False,
+        super().__init__(canvas, owner.get_x(), owner.get_y(),
+                         6, 20, False,
                          'missile_up')
+
         self._forward_image = 'missile_up'
         self._backward_image = 'missile_down'
         self._left_image = 'missile_left'
         self._right_image = 'missile_right'
         self._owner = owner
 
-        if owner.get_vx() == 1 and owner.get_vy() ==0:
+        if owner.get_vx() == 1 and owner.get_vy() == 0:
             self.right()
-
-        elif owner.get_vx() == -1 and owner.get_vy() == 0:
+        if owner.get_vx() == -1 and owner.get_vy() == 0:
             self.left()
-
-        elif owner.get_vx() == 0 and owner.get_vy() == -1:
+        if owner.get_vx() == 0 and owner.get_vy() == -1:
             self.forward()
-
-        elif owner.get_vx() == 0 and owner.get_vy() == 1:
+        if owner.get_vx() == 0 and owner.get_vy() == 1:
             self.backward()
 
+        self._x += owner.get_vx() * self.get_size() // 2
+        self._y += owner.get_vy() * self.get_size() // 2
 
-        self._x += owner.get_vx() * self.get_size()//2
-        self._y += owner.get_vy() * self.get_size()//2
-        self._hitbox.set_black_list([world.CONCRETE, world.BRICK])
+        self._hitbox.set_blacklist([world.CONCRETE, world.BRICK])
+
     def get_owner(self):
         return self._owner
 
@@ -293,8 +357,5 @@ class Missile(Unit):
             world.destroy(row, col)
             self.destroy()
 
-
-
-
-
-
+        if world.CONCRETE in details:
+            self.destroy()
