@@ -111,8 +111,8 @@ def get_height():
 def initialize(canv):
     global _canvas
     _canvas = canv
-    create_map(20, 20)
-    # load_map('../map/1.tmap')
+    # create_map(20, 20)
+    load_map('../map/1.tmap')
     # load_map('../map/2.tmap')
     # load_map('../map/3.tmap')
 

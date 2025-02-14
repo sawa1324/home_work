@@ -5,9 +5,8 @@ from tkinter import NW
 from random import randint
 import missile_collection
 
-
 class Unit:
-    def __init__(self, canvas, x, y, speed, padding, bot, default_image):
+    def __init__(self, canvas, x, y, speed, padding, bot, default_image, has_hp_bar=False):
         self._destroyed = False
         self._speed = speed
         self._x = x
@@ -19,45 +18,105 @@ class Unit:
         self._dx = 0
         self._dy = 0
         self._bot = bot
-        self._bot = bot
         self._hitbox = Hitbox(x, y, world.BLOCK_SIZE, world.BLOCK_SIZE, padding=padding)
         self._default_image = default_image
-        self._forward_image = default_image
-        self._backward_image = default_image
-        self._left_image = default_image
-        self._right_image = default_image
-        self._tank_destroy = default_image
-        self._100 = default_image
-        self._75 = default_image
-        self._50 = default_image
-        self._25 = default_image
-        self._0 = default_image
-        self._create()
+        self._id = self._canvas.create_image(self._x, self._y, image=skin.get(self._default_image), anchor=NW)
+        self._hp_bar_id = None  # Изначально полоски нет
+        self._max_hp = 100
+        self._has_hp_bar = has_hp_bar  # Флаг, есть ли полоска
+
+        if self._has_hp_bar:
+            self._create_hp_bar()
 
     def damage(self, value):
         self._hp -= value
+        if self._hp < 0:
+            self._hp = 0
         if self._hp <= 0:
             self.destroy()
+        elif self._has_hp_bar:
+            self._update_hp_bar()
 
-    def is_destroyed(self):
-        return self._destroyed
+    def _create_hp_bar(self):
+         x = world.get_screen_x(self._x)
+         y = world.get_screen_y(self._y) - 10
+
+         self._hp_bar_id = self._canvas.create_rectangle(
+             x, y, x + world.BLOCK_SIZE, y + 5, fill="green", outline=""
+         )
+         self._update_hp_bar()
+
+    def _update_hp_bar(self):
+        if self._has_hp_bar:
+            hp_percentage = max(0, self._hp) / self._max_hp
+            bar_width = int(world.BLOCK_SIZE * hp_percentage)
+            x = world.get_screen_x(self._x)
+            y = world.get_screen_y(self._y) - 10
+
+            self._canvas.coords(self._hp_bar_id, x, y, x + bar_width, y + 5)
+            if hp_percentage > 0.5:
+                color = "green"
+            elif hp_percentage > 0.25:
+                color = "yellow"
+            else:
+                color = "red"
+
+            self._canvas.itemconfig(self._hp_bar_id, fill=color)
+
 
     def destroy(self):
         self._destroyed = True
         self.stop()
         self._speed = 0
-        if self._hp == 0:
-            self._canvas.itemconfig(self._id,
-                                    image=skin.get(self._tank_destroy))
+        if isinstance(self, Tank):  # Проверяем, является ли юнит танком
+            self._canvas.itemconfig(self._id, image=skin.get(self._tank_destroy))
+        else:  # Если юнит не танк (например, ракета)
+            self._canvas.delete(self._id)  # Просто удаляем изображение
 
-    def _create(self):
-        self._id = self._canvas.create_image(self._x, self._y, image=skin.get(self._default_image), anchor=NW)
+        if self._hp_bar_id:
+            self._canvas.delete(self._hp_bar_id)
+
+    def _repaint(self):  # Переопределяем, чтобы обновлять полоску HP
+        screen_x = world.get_screen_x(self._x)
+        screen_y = world.get_screen_y(self._y)
+        self._canvas.moveto(self._id, x=screen_x, y=screen_y)
+        if self._has_hp_bar:
+            self._update_hp_bar()  # Обновляем положение полоски при движении танка
+
+    def _undo_move(self):  # Переопределяем для полоски
+        if self._dx == 0 and self._dy == 0:
+            return
+        self._x -= self._dx
+        self._y -= self._dy
+        self._update_hitbox()
+        self._repaint()
+        self._dx = 0
+        self._dy = 0
+        if self._has_hp_bar:
+             self._update_hp_bar() # Обновляем положение полоски при отмене движения
+
 
     def __del__(self):
         try:
             self._canvas.delete(self._id)
         except Exception:
             pass
+        if self._hp_bar_id:  # Проверяем наличие полоски
+            self._canvas.delete(self._hp_bar_id)
+
+
+
+
+    def is_destroyed(self):
+        return self._destroyed
+
+
+
+
+
+    def _create(self):
+        self._id = self._canvas.create_image(self._x, self._y, image=skin.get(self._default_image), anchor=NW)
+
 
     def forward(self):
         self._vx = 0
@@ -98,10 +157,6 @@ class Unit:
         self._check_map_collision()
         self._repaint()
 
-    def _repaint(self):
-        screen_x = world.get_screen_x(self._x)
-        screen_y = world.get_screen_y(self._y)
-        self._canvas.moveto(self._id, x=screen_x, y=screen_y)
 
     def _AI(self):
         pass
@@ -123,15 +178,7 @@ class Unit:
     def _on_map_collision(self, details):
         pass
 
-    def _undo_move(self):
-        if self._dx == 0 and self._dy == 0:
-            return
-        self._x -= self._dx
-        self._y -= self._dy
-        self._update_hitbox()
-        self._repaint()
-        self._dx = 0
-        self._dy = 0
+
 
     def intersect(self, other_unit):
         value = self._hitbox.intersects(other_unit._hitbox)
@@ -181,8 +228,16 @@ class Unit:
 class Tank(Unit):
     def __init__(self, canvas, row, col, bot=True):
         super().__init__(canvas, col * world.BLOCK_SIZE, row * world.BLOCK_SIZE, 2, 8,
-                         bot, 'tank_up')
-
+                         bot, 'tank_up', has_hp_bar=True)
+        self._tank_destroy = 'tank_destroy'  # Добавляем атрибут _tank_destroy
+        self._max_ammo = 10 # Максимальное количество патронов
+        self._ammo = self._max_ammo # Текущее количество патронов
+        self._max_fuel = 100 # Максимальное количество топлива
+        self._fuel = self._max_fuel # Текущее количество топлива
+        self._tank_destroy = 'tank_destroy'  # Добавляем атрибут _tank_destroy
+        # ... остальной код класса Tank ...
+        self._max_hp = 100 # Устанавливаем максимальное здоровье
+        self._update_hp_bar() # Обновляем полоску после установки
         if bot:
             self._forward_image = 'tank_up'
             self._backward_image = 'tank_down'
@@ -225,6 +280,14 @@ class Tank(Unit):
 
     def set_target(self, target):
         self._target = target
+
+    # Добавим методы для получения информации о патронах и топливе
+    def get_ammo(self):
+        return self._ammo
+
+    def get_fuel(self):
+        return self._fuel
+
 
     def _AI_goto_target(self):
         if randint(1, 2) == 1:
@@ -325,7 +388,8 @@ class Missile(Unit):
     def __init__(self, canvas, owner):
         super().__init__(canvas, owner.get_x(), owner.get_y(),
                          6, 20, False,
-                         'missile_up')
+                         'missile_up', has_hp_bar=False)  # Отключаем полоску
+
 
         self._forward_image = 'missile_up'
         self._backward_image = 'missile_down'

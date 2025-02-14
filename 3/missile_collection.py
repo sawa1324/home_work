@@ -21,12 +21,23 @@ def update():
         else:
             _missiles[i].update()
 
+def destroy_missile(self, missile):
+    missile.destroy()  # Вызываем метод destroy() у ракеты
+    self._missiles.remove(missile)  # Удаляем ракету из списка
 
 def check_missiles_collision(tank):
+    global _missiles # Указываем, что используем глобальную переменную _missiles
+
+    # Создаем новый список ракет для итерации, чтобы избежать проблем при удалении элементов из _missiles
+    missiles_to_remove = []
     for missile in _missiles:
-        if missile.get_owner() == tank:
-            continue
-        if missile.intersect(tank):
-            missile.destroy()
-            tank.damage(25)
-            return
+        if missile.get_owner() != tank and tank.intersect(missile):
+            tank.damage(25)  # Наносим урон танку
+            missiles_to_remove.append(missile) # Добавляем ракету в список на удаление
+
+    # Удаляем ракеты после завершения итерации
+    for missile in missiles_to_remove:
+        missile.destroy()  # Вызываем destroy() у объекта Missile
+        _missiles.remove(missile) # Удаляем ракету из списк
+
+

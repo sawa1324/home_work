@@ -24,11 +24,17 @@ def initialize(canv):
 
 
 def _get_screen_text():
-    if get_player().is_destroyed():
+    player = get_player()
+    if player.is_destroyed():
         return 'GAME OVER'
     if len(_tanks) == 1:
         return 'YOU WON'
-    return 'осталось {}'.format(len(_tanks) - 1)
+
+    ammo = player.get_ammo() # Получаем количество патронов
+    fuel = player.get_fuel() # Получаем количество топлива
+    enemies = len(_tanks) - 1 # Получаем количество врагов
+
+    return f'Враги: {enemies}, Патроны: {ammo}, Топливо: {fuel}' # Формируем строку
 
 
 def _update_screen():
@@ -39,11 +45,13 @@ def get_player():
     return _tanks[0]
 
 
+
 def update():
     _update_screen()
     start = len(_tanks) - 1
     for i in range(start, -1, -1):
         if _tanks[i].is_destroyed() and i != 0:
+            _tanks[i]._canvas.delete(_tanks[i]._hp_bar_id) # Удаляем полоску перед удалением
             del _tanks[i]
         else:
             _tanks[i].update()
