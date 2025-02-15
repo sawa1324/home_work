@@ -1,7 +1,7 @@
 
 import missile_collection
 
-from tank import Tank
+
 
 from tkinter import *
 
